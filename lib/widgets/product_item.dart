@@ -1,42 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_my_shop/providers/product_model.dart';
 import 'package:flutter_my_shop/screens/product_detail_screen.dart';
+import 'package:provider/provider.dart';
 
 class ProductItem extends StatelessWidget {
-  final String productId;
-  final String title;
-  final String imageUrl;
+  const ProductItem({super.key});
 
-  const ProductItem(this.productId, this.title, this.imageUrl, {super.key});
-
-  void handleFavorite() {
-    print('favorite');
+  void handleFavorite(Product product) {
+    product.toggleFavoriteStatus();
   }
 
   void handleAddToCart() {
     print('cart');
   }
 
-  void handleGoToProductDetails(BuildContext ctx) {
-    Navigator.of(ctx).pushNamed(ProductDetailScreen.routeName, arguments: productId);
+  void handleGoToProductDetails(BuildContext ctx, String productId) {
+    Navigator.of(ctx)
+        .pushNamed(ProductDetailScreen.routeName, arguments: productId);
   }
 
   @override
   Widget build(BuildContext context) {
+    final product = Provider.of<Product>(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
           footer: GridTileBar(
             backgroundColor: Colors.black87,
             title: Text(
-              title,
+              product.title,
               textAlign: TextAlign.center,
             ),
             leading: IconButton(
               icon: Icon(
-                Icons.favorite,
+                product.isFavorite ? Icons.favorite : Icons.favorite_border,
                 color: Theme.of(context).colorScheme.secondary,
               ),
-              onPressed: handleFavorite,
+              onPressed: () => handleFavorite(product),
             ),
             trailing: IconButton(
               icon: Icon(
@@ -47,9 +47,9 @@ class ProductItem extends StatelessWidget {
             ),
           ),
           child: GestureDetector(
-            onTap: () => handleGoToProductDetails(context),
+            onTap: () => handleGoToProductDetails(context, product.id),
             child: Image.network(
-              imageUrl,
+              product.imageUrl,
               fit: BoxFit.cover,
             ),
           )),
