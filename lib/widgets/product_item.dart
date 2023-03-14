@@ -32,7 +32,7 @@ class ProductItem extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             leading: Consumer<Product>(
-              builder: (ctx, product, child) => IconButton(
+              builder: (_, product, __) => IconButton(
                 icon: Icon(
                   product.isFavorite ? Icons.favorite : Icons.favorite_border,
                   color: Theme.of(context).colorScheme.secondary,

@@ -8,7 +8,7 @@ class ProductsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final products = Provider.of<Products>(context).items;
+    final products = Provider.of<Products>(context);
 
     return GridView.builder(
         padding: const EdgeInsets.all(10),
@@ -17,9 +17,9 @@ class ProductsGrid extends StatelessWidget {
             childAspectRatio: 1.5,
             crossAxisSpacing: 10,
             mainAxisSpacing: 10),
-        itemCount: products.length,
+        itemCount: products.items.length,
         itemBuilder: (_, i) => ChangeNotifierProvider.value(
-              value: products[i],
+              value: products.items[i],
               child: const ProductItem(),
             ));
   }

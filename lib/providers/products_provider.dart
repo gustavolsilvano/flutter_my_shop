@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_my_shop/providers/product_model.dart';
 
 class Products with ChangeNotifier {
-  List<Product> _items = [
+  final List<Product> _items = [
     Product(
       id: 'p1',
       title: 'Red Shirt',
@@ -37,8 +37,26 @@ class Products with ChangeNotifier {
     ),
   ];
 
+  var _showFavoritesOnly = false;
+
   List<Product> get items {
+    if (_showFavoritesOnly) {
+      print('SHOW FAVORITE');
+
+      return _items.where((item) => item.isFavorite).toList();
+    }
     return [..._items];
+  }
+
+  void showFavoritesOnly() {
+    print('SHOW FAVORITE');
+    _showFavoritesOnly = true;
+    notifyListeners();
+  }
+
+  void showAll() {
+    _showFavoritesOnly = false;
+    notifyListeners();
   }
 
   Product findById(String id) {
