@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_my_shop/providers/cart.dart';
 import 'package:flutter_my_shop/providers/product_model.dart';
 import 'package:flutter_my_shop/screens/product_detail_screen.dart';
 import 'package:provider/provider.dart';
@@ -10,8 +11,8 @@ class ProductItem extends StatelessWidget {
     product.toggleFavoriteStatus();
   }
 
-  void handleAddToCart() {
-    print('cart');
+  void handleAddToCart(Cart cart, Product product) {
+    cart.addItem(product.id, product.price, product.title);
   }
 
   void handleGoToProductDetails(BuildContext ctx, String productId) {
@@ -22,6 +23,8 @@ class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
+    final cart = Provider.of<Cart>(context, listen: false);
+
     return ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: GridTile(
@@ -45,7 +48,7 @@ class ProductItem extends StatelessWidget {
                 Icons.shopping_cart,
                 color: Theme.of(context).colorScheme.secondary,
               ),
-              onPressed: handleAddToCart,
+              onPressed: () => handleAddToCart(cart, product),
             ),
           ),
           child: GestureDetector(

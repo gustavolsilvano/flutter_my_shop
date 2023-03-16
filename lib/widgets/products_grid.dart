@@ -4,7 +4,9 @@ import 'package:flutter_my_shop/widgets/product_item.dart';
 import 'package:provider/provider.dart';
 
 class ProductsGrid extends StatelessWidget {
-  const ProductsGrid({super.key});
+  bool showOnlyFavorites;
+
+  ProductsGrid(this.showOnlyFavorites, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +19,13 @@ class ProductsGrid extends StatelessWidget {
             childAspectRatio: 1.5,
             crossAxisSpacing: 10,
             mainAxisSpacing: 10),
-        itemCount: products.items.length,
+        itemCount: showOnlyFavorites
+            ? products.favoriteItems.length
+            : products.items.length,
         itemBuilder: (_, i) => ChangeNotifierProvider.value(
-              value: products.items[i],
+              value: showOnlyFavorites
+                  ? products.favoriteItems[i]
+                  : products.items[i],
               child: const ProductItem(),
             ));
   }
