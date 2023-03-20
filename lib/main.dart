@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_my_shop/providers/cart.dart';
 import 'package:flutter_my_shop/providers/products_provider.dart';
+import 'package:flutter_my_shop/screens/cart_screen.dart';
 import 'package:flutter_my_shop/screens/product_detail_screen.dart';
 import 'package:flutter_my_shop/screens/products_overview_screen.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => Cart())
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'MyShop',
         theme: theme.copyWith(
             colorScheme:
@@ -31,6 +33,7 @@ class MyApp extends StatelessWidget {
           '/': (_) => ProductOverviewScreen(),
           ProductOverviewScreen.routeName: (_) => ProductOverviewScreen(),
           ProductDetailScreen.routeName: (_) => const ProductDetailScreen(),
+          CartScreen.routeName: (_) => const CartScreen(),
         },
       ),
     );

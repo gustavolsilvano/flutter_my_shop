@@ -26,5 +26,14 @@ class Cart with ChangeNotifier {
               price: price,
               quantity: 1));
     }
+    notifyListeners();
+  }
+
+  double get totalAmount {
+    double total = 0.0;
+    _items.forEach((_, item) {
+      total += item.price * item.quantity;
+    });
+    return total;
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_my_shop/providers/cart.dart';
 import 'package:flutter_my_shop/providers/products_provider.dart';
+import 'package:flutter_my_shop/screens/cart_screen.dart';
 import 'package:flutter_my_shop/widgets/products_grid.dart';
 import 'package:provider/provider.dart';
 import '../widgets/custom_badge.dart';
@@ -19,10 +20,13 @@ class ProductOverviewScreen extends StatefulWidget {
 class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   bool _showOnlyFavorites = false;
 
+  void handlePressCart(BuildContext ctx) {
+    Navigator.of(ctx).pushNamed(CartScreen.routeName);
+  }
+
   @override
   Widget build(BuildContext context) {
     final productsData = Provider.of<Products>(context, listen: false);
-    final cart = Provider.of<Cart>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -52,13 +56,12 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
                       child: Text('Show All'),
                     )
                   ]),
-          CustomBadge(
-            value: cart.items.length.toString(),
+          Consumer<Cart>(
+            builder: (_, cart, ch) =>
+                CustomBadge(value: cart.items.length.toString(), child: ch!),
             child: IconButton(
               icon: const Icon(Icons.shopping_cart),
-              onPressed: () {
-                // Implement cart logic here
-              },
+              onPressed: () => handlePressCart(context),
             ),
           ),
         ],
