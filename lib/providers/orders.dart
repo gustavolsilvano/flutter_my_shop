@@ -7,6 +7,10 @@ class Order {
   final List<CartItem> products;
   final DateTime createdAt;
 
+  get fixedAmount {
+    return amount.toStringAsFixed(2);
+  }
+
   Order(
       {required this.id,
       required this.amount,

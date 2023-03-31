@@ -14,14 +14,10 @@ class CartScreen extends StatelessWidget {
     final cart = Provider.of<Cart>(context);
     final orders = Provider.of<Orders>(context, listen: false);
 
-    cart.items.forEach((_, item) => print(item.toString()));
-
     void handleCreateOrder() {
       orders.addOrder(cart.items.values.toList(), cart.totalAmount);
       cart.clear();
     }
-
-    print(orders.orders);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Your Cart')),
@@ -40,7 +36,7 @@ class CartScreen extends StatelessWidget {
                   ),
                   Chip(
                       backgroundColor: Theme.of(context).primaryColor,
-                      label: Text('R\$ ${cart.totalAmount}',
+                      label: Text('R\$ ${cart.totalAmount.toStringAsFixed(2)}',
                           style: TextStyle(
                             color: Theme.of(context)
                                 .primaryTextTheme
