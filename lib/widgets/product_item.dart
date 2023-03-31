@@ -11,8 +11,17 @@ class ProductItem extends StatelessWidget {
     product.toggleFavoriteStatus();
   }
 
-  void handleAddToCart(Cart cart, Product product) {
+  void handleAddToCart(Cart cart, Product product, BuildContext context) {
     cart.addItem(product.id, product.price, product.title);
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        duration: const Duration(seconds: 4),
+        action: SnackBarAction(
+            label: 'UNDO', onPressed: () => cart.removeSingleItem(product.id)),
+        content: const Text(
+          'Added item to cart!',
+          textAlign: TextAlign.center,
+        )));
   }
 
   void handleGoToProductDetails(BuildContext ctx, String productId) {
@@ -48,7 +57,7 @@ class ProductItem extends StatelessWidget {
                 Icons.shopping_cart,
                 color: Theme.of(context).colorScheme.secondary,
               ),
-              onPressed: () => handleAddToCart(cart, product),
+              onPressed: () => handleAddToCart(cart, product, context),
             ),
           ),
           child: GestureDetector(
