@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_my_shop/providers/cart.dart';
-import 'package:flutter_my_shop/providers/products_provider.dart';
 import 'package:flutter_my_shop/screens/cart_screen.dart';
+import 'package:flutter_my_shop/widgets/app_drawer.dart';
 import 'package:flutter_my_shop/widgets/products_grid.dart';
 import 'package:provider/provider.dart';
 import '../widgets/custom_badge.dart';
@@ -11,7 +11,7 @@ enum FilterOptions { Favorites, All }
 class ProductOverviewScreen extends StatefulWidget {
   static String routeName = 'product_overview_screen';
 
-  ProductOverviewScreen({super.key});
+  const ProductOverviewScreen({super.key});
 
   @override
   State<ProductOverviewScreen> createState() => _ProductOverviewScreenState();
@@ -26,9 +26,8 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final productsData = Provider.of<Products>(context, listen: false);
-
     return Scaffold(
+      drawer: const AppDrawer(),
       appBar: AppBar(
         title: const Text('Product overview'),
         actions: [
