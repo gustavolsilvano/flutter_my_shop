@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_my_shop/providers/product_model.dart';
 
 class ImagePreviewInput extends StatefulWidget {
   final TextEditingController _imageUrlController;
+  final Function(String value) onSubmit;
+  Product _editedProduct;
 
-  const ImagePreviewInput(this._imageUrlController, {super.key});
+  ImagePreviewInput(
+      this._imageUrlController, this.onSubmit, this._editedProduct,
+      {super.key});
 
   @override
   State<ImagePreviewInput> createState() => _ImagePreviewInputState();
@@ -58,6 +63,15 @@ class _ImagePreviewInputState extends State<ImagePreviewInput> {
             textInputAction: TextInputAction.done,
             controller: widget._imageUrlController,
             focusNode: _imageUrlFocusNode,
+            onFieldSubmitted: widget.onSubmit,
+            onSaved: (value) {
+              widget._editedProduct = Product(
+                  id: widget._editedProduct.id,
+                  title: widget._editedProduct.title,
+                  description: value ?? '',
+                  price: widget._editedProduct.price,
+                  imageUrl: widget._editedProduct.imageUrl);
+            },
           ),
         ),
       ],
