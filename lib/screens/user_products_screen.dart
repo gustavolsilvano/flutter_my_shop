@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_my_shop/providers/products_provider.dart';
+import 'package:flutter_my_shop/screens/edit_product_screen.dart';
 import 'package:flutter_my_shop/widgets/app_drawer.dart';
 import 'package:flutter_my_shop/widgets/user_product_item.dart';
 import 'package:provider/provider.dart';
@@ -9,14 +10,20 @@ class UserProductsScreen extends StatelessWidget {
 
   const UserProductsScreen({super.key});
 
+  void goToCreateProduct(BuildContext context) {
+    Navigator.of(context).pushNamed(EditProductScreen.routeName);
+  }
+
   @override
   Widget build(BuildContext context) {
     final productsData = Provider.of<Products>(context);
 
     return Scaffold(
-      appBar: AppBar(
-          actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.add))],
-          title: const Text('Your Products')),
+      appBar: AppBar(actions: [
+        IconButton(
+            onPressed: () => goToCreateProduct(context),
+            icon: const Icon(Icons.add))
+      ], title: const Text('Your Products')),
       drawer: const AppDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(8),
