@@ -1,6 +1,10 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_my_shop/providers/product_model.dart';
 import 'package:flutter_my_shop/widgets/image_preview_input.dart';
+
+enum FieldsToValidate { description, title, price }
 
 class EditProductScreen extends StatefulWidget {
   static String routeName = '/edit-product-screen';
@@ -32,8 +36,47 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   void _saveForm(_) {
-    if (_form.currentState?.save == null) return;
-    _form.currentState!.save();
+    final isValid = _form.currentState?.validate() ?? false;
+    if (!isValid) return;
+    _form.currentState?.save();
+  }
+
+  String? _validate(String? value, FieldsToValidate type) {
+    switch (type) {
+      case FieldsToValidate.description:
+        return _checkDescription(value);
+      case FieldsToValidate.price:
+        return _checkPrice(value);
+      case FieldsToValidate.title:
+        return _checkTitle(value);
+      default:
+    }
+
+    return null;
+  }
+
+  String? _checkTitle(String? value) {
+    if (value == null || value.isEmpty) return 'Please provide a title.';
+    return null;
+  }
+
+  String? _checkDescription(String? value) {
+    if (value == null || value.isEmpty) return 'Please provide a description.';
+    if (value.length < 10) {
+      return 'Should be at least 10 characters';
+    }
+    return null;
+  }
+
+  String? _checkPrice(String? value) {
+    if (value == null || value.isEmpty) return 'Please provide a price.';
+    if (double.tryParse(value) == null) {
+      return 'Please enter a valid number.';
+    }
+    if (double.parse(value) <= 0) {
+      return 'Please enter a price greater than zero number.';
+    }
+    return null;
   }
 
   @override
@@ -60,6 +103,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     textInputAction: TextInputAction.next,
                     onFieldSubmitted: (_) =>
                         focusNextField(context, _priceFocusNode),
+                    validator: (value) =>
+                        _validate(value, FieldsToValidate.title),
                     onSaved: (value) {
                       _editedProduct = Product(
                           id: _editedProduct.id,
@@ -78,6 +123,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     keyboardType: TextInputType.number,
                     onFieldSubmitted: (_) =>
                         focusNextField(context, _descriptionFocusNode),
+                    validator: (value) =>
+                        _validate(value, FieldsToValidate.price),
                     onSaved: (value) {
                       _editedProduct = Product(
                           id: _editedProduct.id,
@@ -93,6 +140,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     ),
                     maxLines: 3,
                     keyboardType: TextInputType.multiline,
+                    validator: (value) =>
+                        _validate(value, FieldsToValidate.description),
                     onSaved: (value) {
                       _editedProduct = Product(
                           id: _editedProduct.id,
@@ -103,7 +152,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     },
                   ),
                   ImagePreviewInput(
-                      _imageUrlController, _saveForm, _editedProduct)
+                      _imageUrlController, _saveForm, _editedProduct, _form)
                 ],
               ),
             )),

@@ -4,10 +4,11 @@ import 'package:flutter_my_shop/providers/product_model.dart';
 class ImagePreviewInput extends StatefulWidget {
   final TextEditingController _imageUrlController;
   final Function(String value) onSubmit;
+  final GlobalKey<FormState> form;
   Product _editedProduct;
 
   ImagePreviewInput(
-      this._imageUrlController, this.onSubmit, this._editedProduct,
+      this._imageUrlController, this.onSubmit, this._editedProduct, this.form,
       {super.key});
 
   @override
@@ -19,7 +20,25 @@ class _ImagePreviewInputState extends State<ImagePreviewInput> {
 
   void _updateImageUrl() {
     if (_imageUrlFocusNode.hasFocus) return;
+    if (widget.form.currentState?.validate() != null) return;
     setState(() {});
+  }
+
+  String? _validate(String? value) {
+    print('VALIDATE');
+    if (value == null || value.isEmpty) {
+      return 'Please enter a image URL.';
+    }
+    if (!value.startsWith('http') && !value.startsWith('https')) {
+      return 'Please enter a valid URL.';
+    }
+    print(value.endsWith('png'));
+    if (!value.endsWith('png') &&
+        !value.endsWith('jpg') &&
+        !value.endsWith('jpeg')) {
+      return 'Please enter a valid image URL.';
+    }
+    return null;
   }
 
   @override
@@ -62,6 +81,7 @@ class _ImagePreviewInputState extends State<ImagePreviewInput> {
             keyboardType: TextInputType.url,
             textInputAction: TextInputAction.done,
             controller: widget._imageUrlController,
+            validator: _validate,
             focusNode: _imageUrlFocusNode,
             onFieldSubmitted: widget.onSubmit,
             onSaved: (value) {
