@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_my_shop/providers/product_model.dart';
 
@@ -51,6 +53,13 @@ class Products with ChangeNotifier {
 
   void addProduct(Product newProduct) {
     _items.add(newProduct);
+    notifyListeners();
+  }
+
+  void editProduct(Product newProduct) {
+    int index = _items.indexWhere((item) => item.id == newProduct.id);
+    if (index == -1) return;
+    _items[index] = newProduct;
     notifyListeners();
   }
 }

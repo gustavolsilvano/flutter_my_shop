@@ -25,6 +25,21 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _form = GlobalKey<FormState>();
   Product _editedProduct =
       Product(id: '', title: '', price: 0, description: '', imageUrl: '');
+  bool _isInit = true;
+  bool _isEdit = false;
+
+  @override
+  void didChangeDependencies() {
+    if (!_isInit) return;
+    _isInit = false;
+    final productId = ModalRoute.of(context)?.settings.arguments as String?;
+    if (productId == null) return;
+    _isEdit = true;
+    _editedProduct =
+        Provider.of<Products>(context, listen: false).findById(productId);
+    _imageUrlController.text = _editedProduct.imageUrl;
+    super.didChangeDependencies();
+  }
 
   @override
   void dispose() {
@@ -42,11 +57,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
     final isValid = _form.currentState?.validate() ?? false;
     if (!isValid) return;
     _form.currentState?.save();
-    print(_editedProduct.description);
-    print(_editedProduct.title);
-    print(_editedProduct.price);
-    print(_editedProduct.imageUrl);
-    Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+
+    if (!_isEdit) {
+      Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+    }
+    if (_isEdit) {
+      Provider.of<Products>(context, listen: false).editProduct(_editedProduct);
+    }
     Navigator.of(context).pushNamed(UserProductsScreen.routeName);
   }
 
@@ -146,6 +163,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
               child: Column(
                 children: [
                   TextFormField(
+                      initialValue: _editedProduct.title,
                       decoration: const InputDecoration(
                         labelText: 'Title',
                       ),
@@ -157,6 +175,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       onSaved: (value) =>
                           _onSave(value, FieldsToValidate.title)),
                   TextFormField(
+                      initialValue: _editedProduct.price.toString(),
                       decoration: const InputDecoration(
                         labelText: 'Price',
                       ),
@@ -170,6 +189,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       onSaved: (value) =>
                           _onSave(value, FieldsToValidate.price)),
                   TextFormField(
+                      initialValue: _editedProduct.description,
                       decoration: const InputDecoration(
                         labelText: 'Description',
                       ),
