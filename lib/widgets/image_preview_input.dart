@@ -5,10 +5,12 @@ class ImagePreviewInput extends StatefulWidget {
   final TextEditingController _imageUrlController;
   final Function(String value) onSubmit;
   final GlobalKey<FormState> form;
+  final Function(String? value) _onSave;
+
   Product _editedProduct;
 
-  ImagePreviewInput(
-      this._imageUrlController, this.onSubmit, this._editedProduct, this.form,
+  ImagePreviewInput(this._imageUrlController, this.onSubmit,
+      this._editedProduct, this.form, this._onSave,
       {super.key});
 
   @override
@@ -20,19 +22,17 @@ class _ImagePreviewInputState extends State<ImagePreviewInput> {
 
   void _updateImageUrl() {
     if (_imageUrlFocusNode.hasFocus) return;
-    if (widget.form.currentState?.validate() != null) return;
+    if (widget.form.currentState?.validate() == null) return;
     setState(() {});
   }
 
   String? _validate(String? value) {
-    print('VALIDATE');
     if (value == null || value.isEmpty) {
       return 'Please enter a image URL.';
     }
     if (!value.startsWith('http') && !value.startsWith('https')) {
       return 'Please enter a valid URL.';
     }
-    print(value.endsWith('png'));
     if (!value.endsWith('png') &&
         !value.endsWith('jpg') &&
         !value.endsWith('jpeg')) {
@@ -75,24 +75,16 @@ class _ImagePreviewInputState extends State<ImagePreviewInput> {
         ),
         Expanded(
           child: TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'Image URL',
-            ),
-            keyboardType: TextInputType.url,
-            textInputAction: TextInputAction.done,
-            controller: widget._imageUrlController,
-            validator: _validate,
-            focusNode: _imageUrlFocusNode,
-            onFieldSubmitted: widget.onSubmit,
-            onSaved: (value) {
-              widget._editedProduct = Product(
-                  id: widget._editedProduct.id,
-                  title: widget._editedProduct.title,
-                  description: value ?? '',
-                  price: widget._editedProduct.price,
-                  imageUrl: widget._editedProduct.imageUrl);
-            },
-          ),
+              decoration: const InputDecoration(
+                labelText: 'Image URL',
+              ),
+              keyboardType: TextInputType.url,
+              textInputAction: TextInputAction.done,
+              controller: widget._imageUrlController,
+              validator: _validate,
+              focusNode: _imageUrlFocusNode,
+              onFieldSubmitted: widget.onSubmit,
+              onSaved: widget._onSave),
         ),
       ],
     );

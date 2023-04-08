@@ -46,6 +46,11 @@ class Products with ChangeNotifier {
   }
 
   Product findById(String id) {
-    return items.firstWhere((product) => (product.id == id));
+    return _items.firstWhere((product) => (product.id == id));
+  }
+
+  void addProduct(Product newProduct) {
+    _items.add(newProduct);
+    notifyListeners();
   }
 }
