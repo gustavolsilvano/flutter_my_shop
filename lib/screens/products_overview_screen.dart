@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_my_shop/providers/cart.dart';
+import 'package:flutter_my_shop/providers/products_provider.dart';
 import 'package:flutter_my_shop/screens/cart_screen.dart';
 import 'package:flutter_my_shop/widgets/app_drawer.dart';
 import 'package:flutter_my_shop/widgets/products_grid.dart';
 import 'package:provider/provider.dart';
 import '../widgets/custom_badge.dart';
 
-enum FilterOptions { Favorites, All }
+enum FilterOptions { favorites, all }
 
 class ProductOverviewScreen extends StatefulWidget {
   static String routeName = 'product_overview_screen';
@@ -18,6 +19,12 @@ class ProductOverviewScreen extends StatefulWidget {
 }
 
 class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
+  @override
+  void didChangeDependencies() {
+    Provider.of<Products>(context, listen: false).findAll();
+    super.didChangeDependencies();
+  }
+
   bool _showOnlyFavorites = false;
 
   void handlePressCart(BuildContext ctx) {
@@ -33,12 +40,12 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
         actions: [
           PopupMenuButton(
               onSelected: (FilterOptions selectedValue) {
-                if (selectedValue == FilterOptions.Favorites) {
+                if (selectedValue == FilterOptions.favorites) {
                   setState(() {
                     _showOnlyFavorites = true;
                   });
                 }
-                if (selectedValue == FilterOptions.All) {
+                if (selectedValue == FilterOptions.all) {
                   setState(() {
                     _showOnlyFavorites = false;
                   });
@@ -47,11 +54,11 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
               icon: const Icon(Icons.more_vert),
               itemBuilder: (_) => [
                     const PopupMenuItem(
-                      value: FilterOptions.Favorites,
+                      value: FilterOptions.favorites,
                       child: Text('Only Favorites'),
                     ),
                     const PopupMenuItem(
-                      value: FilterOptions.All,
+                      value: FilterOptions.all,
                       child: Text('Show All'),
                     )
                   ]),

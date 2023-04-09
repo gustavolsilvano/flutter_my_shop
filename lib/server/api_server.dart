@@ -7,4 +7,9 @@ class API {
     Uri uri = Uri.https(endpoint, path);
     return await http.post(uri, body: data);
   }
+
+  Future<http.Response> get(String path) async {
+    Uri uri = Uri.https(endpoint, path);
+    return await http.get(uri);
+  }
 }

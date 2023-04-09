@@ -10,6 +10,22 @@ class CreateProductResponse {
 class ProductsServer extends API {
   String mainPath = '/products.json';
 
+  Future<List<Product>> fetchProducts() async {
+    final response = await super.get(mainPath);
+    Map<String, dynamic> jsonBody = json.decode(response.body);
+    List<Product> products = [];
+    jsonBody.forEach((prodId, value) {
+      products.add(Product(
+          id: prodId,
+          title: value['title'],
+          price: value['price'],
+          description: value['description'],
+          isFavorite: value['isFavorite'],
+          imageUrl: value['imageUrl']));
+    });
+    return products;
+  }
+
   Future<Product> createProduct(Product product) async {
     String jsonProduct = json.encode({
       'id': product.id,
