@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_my_shop/server/products_server.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_my_shop/providers/product_model.dart';
@@ -50,13 +52,13 @@ class Products with ChangeNotifier {
     return _items.firstWhere((product) => (product.id == id));
   }
 
-  void addProduct(Product newProduct) async {
+  Future<void> addProduct(Product newProduct) async {
     await ProductsServer().createProduct(newProduct);
     _items.add(newProduct);
     notifyListeners();
   }
 
-  void editProduct(Product newProduct) {
+  Future<void> editProduct(Product newProduct) async {
     int index = _items.indexWhere((item) => item.id == newProduct.id);
     if (index == -1) return;
     _items[index] = newProduct;

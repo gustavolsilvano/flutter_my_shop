@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_my_shop/providers/product_model.dart';
 import 'package:flutter_my_shop/providers/products_provider.dart';
@@ -27,6 +25,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       Product(id: '', title: '', price: 0, description: '', imageUrl: '');
   bool _isInit = true;
   bool _isEdit = false;
+  bool _isLoading = false;
 
   @override
   void didChangeDependencies() {
@@ -53,17 +52,26 @@ class _EditProductScreenState extends State<EditProductScreen> {
     FocusScope.of(context).requestFocus(focusNode);
   }
 
-  void _saveForm(_) {
+  void _saveForm(_) async {
     final isValid = _form.currentState?.validate() ?? false;
     if (!isValid) return;
     _form.currentState?.save();
 
+    setState(() {
+      _isLoading = true;
+    });
+
     if (!_isEdit) {
-      Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+      await Provider.of<Products>(context, listen: false)
+          .addProduct(_editedProduct);
     }
     if (_isEdit) {
-      Provider.of<Products>(context, listen: false).editProduct(_editedProduct);
+      await Provider.of<Products>(context, listen: false)
+          .editProduct(_editedProduct);
     }
+    setState(() {
+      _isLoading = false;
+    });
     Navigator.of(context).pushNamed(UserProductsScreen.routeName);
   }
 
@@ -157,58 +165,62 @@ class _EditProductScreenState extends State<EditProductScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-            key: _form,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  TextFormField(
-                      initialValue: _editedProduct.title,
-                      decoration: const InputDecoration(
-                        labelText: 'Title',
-                      ),
-                      textInputAction: TextInputAction.next,
-                      onFieldSubmitted: (_) =>
-                          focusNextField(context, _priceFocusNode),
-                      validator: (value) =>
-                          _validate(value, FieldsToValidate.title),
-                      onSaved: (value) =>
-                          _onSave(value, FieldsToValidate.title)),
-                  TextFormField(
-                      initialValue: _editedProduct.price.toString(),
-                      decoration: const InputDecoration(
-                        labelText: 'Price',
-                      ),
-                      focusNode: _priceFocusNode,
-                      textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.number,
-                      onFieldSubmitted: (_) =>
-                          focusNextField(context, _descriptionFocusNode),
-                      validator: (value) =>
-                          _validate(value, FieldsToValidate.price),
-                      onSaved: (value) =>
-                          _onSave(value, FieldsToValidate.price)),
-                  TextFormField(
-                      initialValue: _editedProduct.description,
-                      decoration: const InputDecoration(
-                        labelText: 'Description',
-                      ),
-                      maxLines: 3,
-                      keyboardType: TextInputType.multiline,
-                      validator: (value) =>
-                          _validate(value, FieldsToValidate.description),
-                      onSaved: (value) =>
-                          _onSave(value, FieldsToValidate.description)),
-                  ImagePreviewInput(
-                      _imageUrlController,
-                      _saveForm,
-                      _editedProduct,
-                      _form,
-                      (String? value) =>
-                          _onSave(value, FieldsToValidate.imageUrl))
-                ],
-              ),
-            )),
+        child: _isLoading
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : Form(
+                key: _form,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      TextFormField(
+                          initialValue: _editedProduct.title,
+                          decoration: const InputDecoration(
+                            labelText: 'Title',
+                          ),
+                          textInputAction: TextInputAction.next,
+                          onFieldSubmitted: (_) =>
+                              focusNextField(context, _priceFocusNode),
+                          validator: (value) =>
+                              _validate(value, FieldsToValidate.title),
+                          onSaved: (value) =>
+                              _onSave(value, FieldsToValidate.title)),
+                      TextFormField(
+                          initialValue: _editedProduct.price.toString(),
+                          decoration: const InputDecoration(
+                            labelText: 'Price',
+                          ),
+                          focusNode: _priceFocusNode,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.number,
+                          onFieldSubmitted: (_) =>
+                              focusNextField(context, _descriptionFocusNode),
+                          validator: (value) =>
+                              _validate(value, FieldsToValidate.price),
+                          onSaved: (value) =>
+                              _onSave(value, FieldsToValidate.price)),
+                      TextFormField(
+                          initialValue: _editedProduct.description,
+                          decoration: const InputDecoration(
+                            labelText: 'Description',
+                          ),
+                          maxLines: 3,
+                          keyboardType: TextInputType.multiline,
+                          validator: (value) =>
+                              _validate(value, FieldsToValidate.description),
+                          onSaved: (value) =>
+                              _onSave(value, FieldsToValidate.description)),
+                      ImagePreviewInput(
+                          _imageUrlController,
+                          _saveForm,
+                          _editedProduct,
+                          _form,
+                          (String? value) =>
+                              _onSave(value, FieldsToValidate.imageUrl))
+                    ],
+                  ),
+                )),
       ),
     );
   }
