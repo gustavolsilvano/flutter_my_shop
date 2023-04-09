@@ -52,10 +52,15 @@ class Products with ChangeNotifier {
     return _items.firstWhere((product) => (product.id == id));
   }
 
-  Future<void> addProduct(Product newProduct) async {
-    await ProductsServer().createProduct(newProduct);
-    _items.add(newProduct);
-    notifyListeners();
+  Future<void> addProduct(Product newProduct, BuildContext context) async {
+    try {
+      await ProductsServer().createProduct(newProduct);
+      _items.add(newProduct);
+      notifyListeners();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Not possible to create product')));
+    }
   }
 
   Future<void> editProduct(Product newProduct) async {

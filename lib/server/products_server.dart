@@ -23,12 +23,13 @@ class ProductsServer extends API {
     final jsonBody = json.decode(response.body);
     CreateProductResponse productResponse =
         CreateProductResponse(jsonBody['name']);
-    return Product(
+    Product newProduct = Product(
         id: productResponse.name,
         title: product.title,
         price: product.price,
         description: product.description,
         isFavorite: product.isFavorite,
         imageUrl: product.imageUrl);
+    return newProduct;
   }
 }

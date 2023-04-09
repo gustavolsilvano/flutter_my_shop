@@ -63,7 +63,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
     if (!_isEdit) {
       await Provider.of<Products>(context, listen: false)
-          .addProduct(_editedProduct);
+          .addProduct(_editedProduct, context);
     }
     if (_isEdit) {
       await Provider.of<Products>(context, listen: false)
