@@ -15,7 +15,7 @@ class Products with ChangeNotifier {
     return _items.where((item) => item.isFavorite).toList();
   }
 
-  Future<void> findAll() async {
+  Future<void> fetchProducts() async {
     try {
       _items = await ProductsServer().fetchProducts();
       notifyListeners();
