@@ -12,4 +12,14 @@ class API {
     Uri uri = Uri.https(endpoint, path);
     return await http.get(uri);
   }
+
+  Future<http.Response> patch(String path, var data) async {
+    Uri uri = Uri.https(endpoint, path);
+    return await http.patch(uri, body: data);
+  }
+
+  Future<http.Response> delete(String path) async {
+    Uri uri = Uri.https(endpoint, path);
+    return await http.delete(uri);
+  }
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_my_shop/server/products_server.dart';
 import 'package:flutter/material.dart';
@@ -39,15 +40,30 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> editProduct(Product newProduct) async {
-    int index = _items.indexWhere((item) => item.id == newProduct.id);
-    if (index == -1) return;
-    _items[index] = newProduct;
-    notifyListeners();
+  Future<void> editProduct(Product newProduct, BuildContext context) async {
+    try {
+      int index = _items.indexWhere((item) => item.id == newProduct.id);
+      if (index == -1) return;
+      _items[index] = newProduct;
+      await ProductsServer().editProduct(newProduct);
+      notifyListeners();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Not possible to edit product')));
+    }
   }
 
-  void deleteProduct(String productId) {
-    _items.removeWhere((item) => item.id == productId);
-    notifyListeners();
+  Future<void> deleteProduct(String productId, BuildContext context) async {
+    try {
+      _items.removeWhere((item) => item.id == productId);
+      final result = await ProductsServer().deleteProduct(productId);
+      if (result.statusCode >= 400) {
+        throw const HttpException('Could not delete product.');
+      }
+      notifyListeners();
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
+    }
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_my_shop/providers/product_model.dart';
 import 'package:flutter_my_shop/server/api_server.dart';
+import 'package:http/http.dart';
 
 class CreateProductResponse {
   final String name;
@@ -8,10 +9,10 @@ class CreateProductResponse {
 }
 
 class ProductsServer extends API {
-  String mainPath = '/products.json';
+  String mainPath = '/products';
 
   Future<List<Product>> fetchProducts() async {
-    final response = await super.get(mainPath);
+    final response = await super.get('$mainPath.json');
     Map<String, dynamic> jsonBody = json.decode(response.body);
     List<Product> products = [];
     jsonBody.forEach((prodId, value) {
@@ -35,7 +36,7 @@ class ProductsServer extends API {
       'isFavorite': product.isFavorite,
       'imageUrl': product.imageUrl
     });
-    final response = await super.post(mainPath, jsonProduct);
+    final response = await super.post('$mainPath.json', jsonProduct);
     final jsonBody = json.decode(response.body);
     CreateProductResponse productResponse =
         CreateProductResponse(jsonBody['name']);
@@ -47,5 +48,33 @@ class ProductsServer extends API {
         isFavorite: product.isFavorite,
         imageUrl: product.imageUrl);
     return newProduct;
+  }
+
+  Future<Product> editProduct(Product product) async {
+    String jsonProduct = json.encode({
+      'id': product.id,
+      'title': product.title,
+      'price': product.price,
+      'description': product.description,
+      'isFavorite': product.isFavorite,
+      'imageUrl': product.imageUrl
+    });
+    final response =
+        await super.patch('$mainPath/${product.id}.json', jsonProduct);
+    final jsonBody = json.decode(response.body);
+    CreateProductResponse productResponse =
+        CreateProductResponse(jsonBody['name']);
+    Product newProduct = Product(
+        id: productResponse.name,
+        title: product.title,
+        price: product.price,
+        description: product.description,
+        isFavorite: product.isFavorite,
+        imageUrl: product.imageUrl);
+    return newProduct;
+  }
+
+  Future<Response> deleteProduct(String productId) async {
+    return await super.delete('$mainPath/$productId');
   }
 }

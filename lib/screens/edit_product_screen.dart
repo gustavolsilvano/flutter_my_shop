@@ -67,7 +67,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
     if (_isEdit) {
       await Provider.of<Products>(context, listen: false)
-          .editProduct(_editedProduct);
+          .editProduct(_editedProduct, context);
     }
     setState(() {
       _isLoading = false;
