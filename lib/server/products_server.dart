@@ -75,6 +75,13 @@ class ProductsServer extends API {
   }
 
   Future<Response> deleteProduct(String productId) async {
-    return await super.delete('$mainPath/$productId');
+    return await super.delete('$mainPath/$productId.json');
+  }
+
+  Future<Response> updateFavorite(String productId, bool isFavorite) async {
+    String jsonProduct = json.encode({
+      'isFavorite': isFavorite,
+    });
+    return await super.patch('$mainPath/$productId.json', jsonProduct);
   }
 }
