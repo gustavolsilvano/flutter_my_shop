@@ -23,17 +23,20 @@ class Product with ChangeNotifier {
     id = DateTime.now().toString();
   }
 
+  void _setFavorite() {
+    isFavorite = !isFavorite;
+    notifyListeners();
+  }
+
   Future<void> toggleFavoriteStatus() async {
     try {
-      isFavorite = !isFavorite;
-      notifyListeners();
+      _setFavorite();
       final result = await ProductsServer().updateFavorite(id, isFavorite);
       if (result.statusCode >= 400) {
         throw const HttpException('Error favoriting');
       }
     } catch (_) {
-      isFavorite = !isFavorite;
-      notifyListeners();
+      _setFavorite();
     }
   }
 }

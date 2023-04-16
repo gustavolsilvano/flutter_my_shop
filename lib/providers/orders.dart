@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_my_shop/providers/cart_item.dart';
+import 'package:flutter_my_shop/server/order_server.dart';
 
 class Order {
-  final String id;
+  final String? id;
   final double amount;
   final List<CartItem> products;
   final DateTime createdAt;
@@ -12,10 +13,18 @@ class Order {
   }
 
   Order(
-      {required this.id,
+      {this.id,
       required this.amount,
       required this.products,
       required this.createdAt});
+
+  Map<String, dynamic> toJson() {
+    return {
+      'amount': amount,
+      'products': products,
+      'createdAt': createdAt,
+    };
+  }
 }
 
 class Orders with ChangeNotifier {
@@ -25,14 +34,24 @@ class Orders with ChangeNotifier {
     return [..._orders];
   }
 
-  void addOrder(List<CartItem> cartProducts, double total) {
-    _orders.insert(
-        0,
-        Order(
-            id: DateTime.now().toString(),
-            amount: total,
-            createdAt: DateTime.now(),
-            products: cartProducts));
+  Future<void> createOrder(List<CartItem> cartProducts, double total) async {
+    Order order = Order(
+        id: DateTime.now().toString(),
+        amount: total,
+        createdAt: DateTime.now(),
+        products: cartProducts);
+    await OrderServer().create(order);
+    _orders.insert(0, order);
     notifyListeners();
+  }
+
+  Future<void> fetchOrders(BuildContext context) async {
+    try {
+      _orders = await OrderServer().fetchAll();
+    } catch (err) {
+      print(err.toString());
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Not possible to fetch orders')));
+    }
   }
 }

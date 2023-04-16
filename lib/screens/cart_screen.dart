@@ -4,18 +4,39 @@ import 'package:flutter_my_shop/providers/orders.dart';
 import 'package:flutter_my_shop/widgets/cart_item.dart';
 import 'package:provider/provider.dart';
 
-class CartScreen extends StatelessWidget {
+class CartScreen extends StatefulWidget {
   static String routeName = 'cart_screen';
 
   const CartScreen({super.key});
+
+  @override
+  State<CartScreen> createState() => _CartScreenState();
+}
+
+class _CartScreenState extends State<CartScreen> {
+  bool _isCreatingOrder = false;
 
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context);
     final orders = Provider.of<Orders>(context, listen: false);
 
-    void handleCreateOrder() {
-      orders.addOrder(cart.items.values.toList(), cart.totalAmount);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    Future<void> handleCreateOrder() async {
+      try {
+        setState(() {
+          _isCreatingOrder = true;
+        });
+
+        await orders.createOrder(cart.items.values.toList(), cart.totalAmount);
+      } catch (_) {
+        scaffoldMessenger.showSnackBar(
+            const SnackBar(content: Text('Not possible to create order')));
+      } finally {
+        setState(() {
+          _isCreatingOrder = false;
+        });
+      }
       cart.clear();
     }
 
@@ -43,9 +64,13 @@ class CartScreen extends StatelessWidget {
                                 .titleMedium
                                 ?.color,
                           ))),
-                  TextButton(
-                      onPressed: handleCreateOrder,
-                      child: const Text('ORDER NOW'))
+                  _isCreatingOrder
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : TextButton(
+                          onPressed: handleCreateOrder,
+                          child: const Text('ORDER NOW'))
                 ],
               ),
             ),
