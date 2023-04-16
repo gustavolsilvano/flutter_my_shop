@@ -19,21 +19,6 @@ class ProductOverviewScreen extends StatefulWidget {
 }
 
 class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
-  bool _isLoading = false;
-
-  @override
-  void initState() {
-    setState(() {
-      _isLoading = true;
-    });
-    Provider.of<Products>(context, listen: false)
-        .fetchProducts()
-        .then((value) => setState(() {
-              _isLoading = false;
-            }));
-    super.initState();
-  }
-
   bool _showOnlyFavorites = false;
 
   void handlePressCart(BuildContext ctx) {
@@ -81,11 +66,17 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(
+      body: FutureBuilder(
+        future: Provider.of<Products>(context, listen: false).fetchProducts(),
+        builder: (ctx, data) {
+          if (data.connectionState == ConnectionState.waiting) {
+            return const Center(
               child: CircularProgressIndicator(),
-            )
-          : ProductsGrid(_showOnlyFavorites),
+            );
+          }
+          return ProductsGrid(_showOnlyFavorites);
+        },
+      ),
     );
   }
 }

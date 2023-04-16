@@ -15,7 +15,8 @@ class OrderServer extends API {
   Future<List<Order>> fetchAll() async {
     final response = await super.get('$mainPath.json');
     List<Order> orders = [];
-    Map<String, dynamic> jsonBody = json.decode(response.body);
+    Map<String, dynamic>? jsonBody = json.decode(response.body);
+    if (jsonBody == null) return [];
     jsonBody.forEach((orderId, order) {
       orders.add(Order(
         id: orderId,

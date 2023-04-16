@@ -45,13 +45,8 @@ class Orders with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchOrders(BuildContext context) async {
-    try {
-      _orders = await OrderServer().fetchAll();
-    } catch (err) {
-      print(err.toString());
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Not possible to fetch orders')));
-    }
+  Future<void> fetchOrders() async {
+    _orders = (await OrderServer().fetchAll()).reversed.toList();
+    notifyListeners();
   }
 }

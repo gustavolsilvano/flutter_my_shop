@@ -13,7 +13,8 @@ class ProductsServer extends API {
 
   Future<List<Product>> fetchProducts() async {
     final response = await super.get('$mainPath.json');
-    Map<String, dynamic> jsonBody = json.decode(response.body);
+    Map<String, dynamic>? jsonBody = json.decode(response.body);
+    if (jsonBody == null) return [];
     List<Product> products = [];
     jsonBody.forEach((prodId, value) {
       products.add(Product(
